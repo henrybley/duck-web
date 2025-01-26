@@ -1,0 +1,8 @@
+[package]
+name = "duck_web"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+duck_web_core = { path = "duck_web_core" }
+duck_web_macros = { path = "duck_web_macros" }
