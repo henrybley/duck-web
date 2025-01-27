@@ -1,8 +1,6 @@
 use core::fmt;
 use std::collections::HashMap;
 
-use serde::Serialize;
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum Method {
     GET,
@@ -42,7 +40,7 @@ pub struct Request {
     pub headers: HashMap<String, String>,
     pub body: Vec<u8>,
     pub path_params: PathParams,
-    pub query: QueryString,
+    pub query_params: QueryParams,
 }
 
 #[derive(Debug)]
@@ -67,4 +65,22 @@ impl Response {
 pub struct PathParams(pub HashMap<String, String>);
 
 #[derive(Debug)]
-pub struct QueryString(pub HashMap<String, Vec<String>>);
+pub struct QueryParams {
+    pub params: HashMap<String, Vec<String>>,
+}
+
+impl QueryParams {
+    pub fn from(query_str: &str) -> Self {
+        let params = query_str
+            .split('&')
+            .map(|segment| {
+                let mut param = segment.split('=');
+                (
+                    param.next().unwrap().to_string(),
+                    vec![param.next().unwrap().to_string(),]
+                )
+            })
+            .collect();
+        QueryParams { params }
+    }
+}

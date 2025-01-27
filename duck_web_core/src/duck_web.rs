@@ -1,6 +1,6 @@
 use serde_json::value::Serializer;
 
-use crate::http::{Method, QueryString};
+use crate::http::{Method, QueryParams};
 use crate::router::ROUTE_REGISTRY;
 use crate::thread_pool::ThreadPool;
 use crate::{Request, Response};
@@ -60,11 +60,8 @@ fn handle_connection(mut stream: TcpStream) {
             None => (full_path, ""),
         };
 
-        //todo: proper query string handling
-        //let query = QueryString::from(query_str);
-        let mut query_params = HashMap::new();
+        let query_params = QueryParams::from(query_str);
 
-        let query = QueryString(query_params);
 
         let registry = ROUTE_REGISTRY.read();
         let mut matched = false;
@@ -77,13 +74,11 @@ fn handle_connection(mut stream: TcpStream) {
                     headers: HashMap::new(),
                     body: Vec::new(),
                     path_params,
-                    query,
+                    query_params
                 };
                 let response = route.handle(request);
                 stream.write(response.to_http().as_bytes());
                 stream.flush().unwrap();
-                //todo:
-                //send_response(stream, response);
                 matched = true;
                 break;
             }
