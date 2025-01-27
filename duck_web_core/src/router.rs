@@ -58,7 +58,7 @@ impl RoutePattern {
                     params.insert(name.clone(), value.as_str().to_string());
                 }
             }
-            PathParams(params)
+            PathParams { params }
         })
     }
 }

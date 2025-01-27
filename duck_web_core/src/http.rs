@@ -62,7 +62,9 @@ impl Response {
 }
 
 #[derive(Debug)]
-pub struct PathParams(pub HashMap<String, String>);
+pub struct PathParams {
+    pub params: HashMap<String, String>,
+}
 
 #[derive(Debug)]
 pub struct QueryParams {
@@ -71,16 +73,15 @@ pub struct QueryParams {
 
 impl QueryParams {
     pub fn from(query_str: &str) -> Self {
-        let params = query_str
-            .split('&')
-            .map(|segment| {
+        let mut params = HashMap::new();
+        if query_str.len() > 0 {
+            for segment in query_str.split('&') {
                 let mut param = segment.split('=');
-                (
-                    param.next().unwrap().to_string(),
-                    vec![param.next().unwrap().to_string(),]
-                )
-            })
-            .collect();
+                let key = param.next().unwrap().to_string();
+                let value = param.next().unwrap().to_string();
+                params.entry(key).or_insert(Vec::new()).push(value);
+            }
+        };
         QueryParams { params }
     }
 }
